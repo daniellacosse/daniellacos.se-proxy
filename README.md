@@ -1,1 +1,1 @@
-# daniellacos.se-nginx
+# daniellacos.se-proxy
