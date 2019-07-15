@@ -1,3 +1,4 @@
-top "homebrew/cask"
+tap "homebrew/cask"
 
+brew "letsencrypt"
 cask "docker"

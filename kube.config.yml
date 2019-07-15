@@ -3,8 +3,8 @@ kind: Secret
 metadata:
   name:  daniellacos.se-tls
 data:
-  tls.crt: ''
-  tls.key: ''
+  tls.crt: certificate/server.crt
+  tls.key: certificate/server.key
 type: kubernetes.io/tls
 ---
 apiVersion: networking.k8s.io/v1beta1
@@ -19,13 +19,13 @@ spec:
   rules:
   - http:
       host: daniellacos.se
-      paths:
-      - path: /*
-        backend:
-          serviceName: daniellacos.se-proxy
-          servicePort: 8080
-      - path: /slots/*
-        backend:
-          serviceName: idea-slot-machine
-          servicePort: 8080
+      backend:
+        serviceName: daniellacos.se-proxy
+        servicePort: 443
+  - http:
+      host: slots.daniellacos.se
+      backend:
+        serviceName: idea-slot-machine
+        servicePort: 8080
 ---
+# TODO: proxy, slots deployment
