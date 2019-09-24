@@ -1,2 +1,4 @@
 .make
 certificate
+yarn.lock
+node_modules
