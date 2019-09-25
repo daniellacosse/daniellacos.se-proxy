@@ -1,3 +1,0 @@
-[submodule ".buildfiles"]
-	path = .buildfiles
-	url = https://github.com/daniellacosse/typescript-buildfiles

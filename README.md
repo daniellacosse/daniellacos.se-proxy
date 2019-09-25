@@ -1,13 +1,9 @@
 # daniellacos.se-proxy
 
-> before you get started, you need `brew`: <br> > [install on mac](https://brew.sh/) | [install on linux](https://docs.brew.sh/Homebrew-on-Linux)
-
-## commands
-
-### `default`
-
 ```sh
-make
+scp -r <debian:linode>/etc/nginx/ ./server
+ssh <debian:linode>
+> sudo apt-get install nginx certbot python-certbot-nginx
+> nginx
+> certbot --nginx
 ```
-
-> See the rest at https://github.com/daniellacosse/typescript-buildfiles#commands
