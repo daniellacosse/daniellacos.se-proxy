@@ -1,5 +1,6 @@
 FROM nginx:alpine
 
-COPY ./server.conf /etc/nginx/conf.d/
+COPY ./server /etc/nginx/
+COPY ./certs /
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx"]

@@ -1,4 +1,4 @@
 .make
-certificate
+certs
 yarn.lock
 node_modules
