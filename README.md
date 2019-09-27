@@ -15,3 +15,9 @@ make
 ```sh
 make setup LINODE_IP=<ip>
 ```
+
+## connect to existing linode
+
+```sh
+make shell
+```
