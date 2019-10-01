@@ -2,7 +2,7 @@ SHELL:=/bin/bash
 
 -include .env
 
-.PHONY: default shell renew setup
+.PHONY: default shell logs renew setup
 
 DOMAIN=daniellacos.se
 
@@ -13,6 +13,9 @@ default:
 
 shell:
 	@ssh root@$(LINODE_IP)
+
+logs:
+	@ssh root@$(LINODE_IP) "tail -f /var/log/nginx/access.log /var/log/nginx/error.log"
 
 renew:
 	@ssh root@$(LINODE_IP) "certbot renew"

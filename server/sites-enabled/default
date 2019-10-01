@@ -19,11 +19,11 @@ server {
   include /etc/letsencrypt/options-ssl-nginx.conf;
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-  location /slots {
-    proxy_pass https://slots.daniellacos.se$request_uri;
+  location ~ ^/([-_\w\d]+)(/?)(.*) {
+    proxy_pass https://$1.daniellacos.se/$3;
   }
 
-  location / {
+  location = / {
     return 301 https://trello.com/b/F5TSktpz/resume;
   }
 }
