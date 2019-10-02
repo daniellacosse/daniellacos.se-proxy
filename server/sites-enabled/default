@@ -20,7 +20,9 @@ server {
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
   location ~ ^/([-_\w\d]+)(/?)(.*) {
-    proxy_pass https://$1.daniellacos.se/$3;
+    resolver 1.1.1.1;
+
+    proxy_pass $scheme://$1.$host/$3;
   }
 
   location = / {
