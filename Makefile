@@ -1,68 +1,48 @@
-MAKE_FOLDER=.make
+SHELL:=/bin/bash
 
-PROJECT_DEPENDENCIES_PROXY_TARGETS=\
-	$(MAKE_FOLDER)/Brewfile
+-include .env
 
-.PHONY:\
-	image \
-	container \
-	release! \
-	reset
+DOMAIN=daniellacos.se
 
-# -- image --
+SERVER_FOLDER=./server
+SSL_CERT_FOLDER=./letsencrypt
+NGINX_ROOT=$(SERVER_FOLDER)/nginx.conf
+NGINX_SITE_FOLDER=$(SERVER_FOLDER)/sites-enabled
 
-IMAGE_PROXY_TARGET=$(MAKE_FOLDER)/image
+REMOTE_SHELL=ssh root@$(LINODE_IP)
+REMOTE_DEPENDENCIES=nginx certbot python3-certbot-nginx
+NGINX_REMOTE_FOLDER=/etc/nginx/
+NGINX_REMOTE_LOG_FOLDER=/var/log/nginx
+NGINX_REMOTE_ACCESS_LOG=$(NGINX_REMOTE_LOG_FOLDER)/access.log
+NGINX_REMOTE_ERROR_LOG=$(NGINX_REMOTE_LOG_FOLDER)/error.log
+CERTBOT_REMOTE_HTTP_CHALLENGE_FOLDER=/var/www/html/.well-known/acme-challenge
 
-LOCAL_SERVER_IMAGE_NAME=daniellacos.se-proxy
+.PHONY: default shell logs renew setup challenge
 
-SERVER_FOLDER=proxy
-SERVER_DOCKERFILE=$(SERVER_FOLDER)/Dockerfile
-SERVER_CONF=$(SERVER_FOLDER)/server.conf
+upload=scp $(1) root@$(LINODE_IP):$(2)
+execute=$(REMOTE_SHELL) "$(1)"
 
-image: $(MAKE_FOLDER)
-	make $(IMAGE_PROXY_TARGET)
+default:
+	@$(call upload,$(NGINX_ROOT),$(NGINX_REMOTE_FOLDER)) ;\
+	 $(call upload,$(NGINX_SITE_FOLDER),$(NGINX_REMOTE_FOLDER)) ;\
+	 $(call execute,service nginx restart)
 
-$(IMAGE_PROXY_TARGET): $(PROJECT_DEPENDENCIES_PROXY_TARGETS) $(SERVER_CONF) $(SERVER_DOCKERFILE)
-	docker build $(SERVER_FOLDER) -t $(LOCAL_SERVER_IMAGE_NAME) \
-		> $(IMAGE_PROXY_TARGET)
+shell:
+	@$(REMOTE_SHELL)
 
-# -- container --
+logs:
+	@$(call execute,tail -f $(NGINX_REMOTE_ACCESS_LOG) $(NGINX_REMOTE_ERROR_LOG))
 
-CONTAINER_PORT=8080
-CONTAINER_LOCALHOST=http://localhost:$(CONTAINER_PORT)
+renew:
+	@$(call run,certbot renew)
 
-container: image
-	container_id=$$(docker ps -aqf "name=$(LOCAL_SERVER_IMAGE_NAME)") ;\
-	\
-	if [ $$container_id ]	;\
-		then docker stop $$container_id ;\
-	fi ;\
-	\
-	docker run --rm -dit \
-		--name=$(LOCAL_SERVER_IMAGE_NAME) \
-		-p $(CONTAINER_PORT):$(CONTAINER_PORT)/tcp \
-		$(LOCAL_SERVER_IMAGE_NAME) ;\
-	\
-	open $(CONTAINER_LOCALHOST)
+setup:
+	@$(call execute,sudo apt-get update) ;\
+	 $(call execute,sudo apt-get install $(REMOTE_SHELL)) ;\
+	 make challenge ;\
+	 make
 
-# -- release! --
-
-GCP_URL=gcr.io
-GCP_PROJECT_NAME=sublime-forest-145201
-GCP_IMAGE_NAME=$(GCP_URL)/$(GCP_PROJECT_NAME)/$(LOCAL_SERVER_IMAGE_NAME):latest
-
-# TODO
-
-# -- reset --
-
-reset:
-	rm -rf $(MAKE_FOLDER)
-
-# -- proxy --
-
-$(MAKE_FOLDER):
-	mkdir -p $(MAKE_FOLDER)
-
-$(MAKE_FOLDER)/Brewfile:
-	brew bundle --force \
-		> $(MAKE_FOLDER)/Brewfile
+# will require you to create a DNS TXT record and muck about a bit in the box via `make shell`
+challenge:
+	@$(call execute,mkdir -p $(CERTBOT_REMOTE_HTTP_CHALLENGE_FOLDER)) ;\
+	 $(call execute,certbot -d *.$(DOMAIN) -d $(DOMAIN) --manual -i nginx)

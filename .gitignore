@@ -1,2 +1,2 @@
-.make
-certificate
+.env
+letsencrypt
