@@ -19,7 +19,9 @@ server {
   include /etc/letsencrypt/options-ssl-nginx.conf;
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
+  # maps daniellacos.se/* to *.daniellacos.se
   location ~ ^/([-_\w\d]+)(/?)(.*) {
+    # force DNS check
     resolver 1.1.1.1;
 
     proxy_pass $scheme://$1.$host/$3;

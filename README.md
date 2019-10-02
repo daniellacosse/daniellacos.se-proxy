@@ -1,11 +1,33 @@
 # daniellacos.se-proxy
 
-> NOTE: specify `LINODE_IP` in `.env` or by passing it to make
+> NOTE: you can pass in `LINODE_IP` through make or via `.env`
 
 ## upload new nginx config
 
 ```sh
 make
+
+# or
+
+make LINODE_IP=<ip>
+```
+
+## connect to existing linode
+
+```sh
+make shell
+```
+
+## tail nginx logs
+
+```sh
+make logs
+```
+
+## renew ssl cert
+
+```sh
+make renew
 ```
 
 ## setup new debian linode
@@ -13,11 +35,11 @@ make
 (the linode needs to already exist)
 
 ```sh
-make setup LINODE_IP=<ip>
+make setup
 ```
 
-## connect to existing linode
+## execute certbot ssl challenge
 
 ```sh
-make shell
+make challenge
 ```
