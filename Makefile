@@ -15,11 +15,12 @@ NGINX_REMOTE_FOLDER=/etc/nginx/
 NGINX_REMOTE_LOG_FOLDER=/var/log/nginx
 NGINX_REMOTE_ACCESS_LOG=$(NGINX_REMOTE_LOG_FOLDER)/access.log
 NGINX_REMOTE_ERROR_LOG=$(NGINX_REMOTE_LOG_FOLDER)/error.log
-CERTBOT_REMOTE_HTTP_CHALLENGE_FOLDER=/var/www/html/.well-known/acme-challenge
+NGINX_STATIC_SERVER_ROOT=/usr/share/nginx/html
+CERTBOT_REMOTE_HTTP_CHALLENGE_FOLDER=${NGINX_STATIC_SERVER_ROOT}/.well-known/acme-challenge
 
 .PHONY: default shell logs renew setup challenge
 
-upload=scp $(1) root@$(LINODE_IP):$(2)
+upload=scp -r $(1) root@$(LINODE_IP):$(2)
 execute=$(REMOTE_SHELL) "$(1)"
 
 default:
@@ -34,11 +35,12 @@ logs:
 	@$(call execute,tail -f $(NGINX_REMOTE_ACCESS_LOG) $(NGINX_REMOTE_ERROR_LOG))
 
 renew:
-	@$(call run,certbot renew)
+	@$(call execute,certbot renew)
 
+# TODO: certbot dns linode - https://certbot-dns-linode.readthedocs.io/en/stable/
 setup:
 	@$(call execute,sudo apt-get update) ;\
-	 $(call execute,sudo apt-get install $(REMOTE_SHELL)) ;\
+	 $(call execute,sudo apt-get install $(REMOTE_DEPENDENCIES)) ;\
 	 make challenge ;\
 	 make
 
