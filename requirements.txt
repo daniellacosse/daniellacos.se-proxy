@@ -32,7 +32,7 @@ pytz==2016.7
 pyxdg==0.25
 PyYAML==5.3.1
 reportbug==7.1.7
-requests==2.12.4
+requests==2.20.0
 requests-file==1.5.1
 requests-toolbelt==0.7.0
 SecretStorage==2.3.1
