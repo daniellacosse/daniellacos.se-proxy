@@ -30,7 +30,7 @@ python-debian==0.1.30
 python-debianbts==2.6.1
 pytz==2016.7
 pyxdg==0.25
-PyYAML==5.3.1
+PyYAML==5.4
 reportbug==7.1.7
 requests==2.12.4
 requests-file==1.5.1
