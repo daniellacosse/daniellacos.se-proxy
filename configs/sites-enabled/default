@@ -31,6 +31,6 @@ server {
   }
 
   location = / {
-    return 301 https://trello.com/b/F5TSktpz/resume;
+    return 301 https://www.notion.so/Daniel-LaCosse-bcf8ea3eb8714626b6a9bbebd57dd7cb
   }
 }
